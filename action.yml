@@ -22,7 +22,7 @@ runs:
         version: 2021.5.29 # https://github.com/pypa/pipenv/issues/4833
 
     - name: Cache .venv
-      if: ${{ inputs.cache-venv }}
+      if: inputs.cache-venv == 'true'
       uses: actions/cache@v2
       id: cache-venv
       env:
@@ -42,12 +42,12 @@ runs:
         node-version: "14"
 
     - name: Set YARN_CACHE_DIR
-      if: ${{ inputs.cache-yarn }}
+      if: inputs.cache-yarn == 'true'
       shell: bash
       run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
 
     - name: Cache yarn
-      if: ${{ inputs.cache-yarn }}
+      if: inputs.cache-yarn == 'true'
       uses: actions/cache@v2
       id: cache-yarn
       env:
