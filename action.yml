@@ -1,0 +1,22 @@
+name: "Setup"
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Setup Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.8"
+        architecture: "x64"
+
+    - name: Setup Pipenv
+      uses: dschep/install-pipenv-action@v1
+      with:
+        version: 2021.5.29 # https://github.com/pypa/pipenv/issues/4833
+
+    - name: Setup Node 14
+      uses: actions/setup-node@v2
+      with:
+        node-version: "14"
