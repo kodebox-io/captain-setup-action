@@ -1,4 +1,7 @@
 name: "Setup"
+inputs:
+  cache-venv:
+    default: false
 runs:
   using: "composite"
   steps:
@@ -20,3 +23,18 @@ runs:
       uses: actions/setup-node@v2
       with:
         node-version: "14"
+
+    - name: Cache .venv
+      if: ${{ inputs.cache-venv }}
+      uses: actions/cache@v2
+      id: cache-venv
+      env:
+        cache-name: cache-venv
+      with:
+        path: ./.venv
+        key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Pipfile.lock') }}-${{ github.event.number }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Pipfile.lock') }}-
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
