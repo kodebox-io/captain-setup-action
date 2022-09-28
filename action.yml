@@ -53,7 +53,7 @@ runs:
       env:
         cache-name: cache-yarn
       with:
-        path: env.YARN_CACHE_DIR
+        path: ${{ env.YARN_CACHE_DIR }}
         key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}-${{ github.event.number }}
         restore-keys: |
           ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}-
