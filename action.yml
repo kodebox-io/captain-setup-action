@@ -60,3 +60,10 @@ runs:
           ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}-
           ${{ runner.os }}-${{ env.cache-name }}-
           ${{ runner.os }}-
+
+    - name: Initialize Lerna
+      if: steps.cache-yarn.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        yarn lerna bootstrap
+        yarn lerna exec --parallel yarn link
