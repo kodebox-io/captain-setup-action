@@ -41,10 +41,11 @@ runs:
       with:
         node-version: "14"
 
-    - name: Set YARN_CACHE_DIR
+    - name: Set yarn-cache-dir
+      id: set-yarn-cache-dir
       if: inputs.cache-yarn == 'true'
       shell: bash
-      run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+      run: echo "::set-output name=yarn-cache-dir::$(yarn cache dir)"
 
     - name: Cache yarn
       if: inputs.cache-yarn == 'true'
@@ -53,7 +54,7 @@ runs:
       env:
         cache-name: cache-yarn
       with:
-        path: ${{ env.YARN_CACHE_DIR }}
+        path: ${{ steps.set-yarn-cache-dir.outputs.yarn-cache-dir }}
         key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}-${{ github.event.number }}
         restore-keys: |
           ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}-
