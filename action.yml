@@ -19,7 +19,7 @@ runs:
     - name: Setup Pipenv
       uses: dschep/install-pipenv-action@v1
       with:
-        version: 2021.5.29 # https://github.com/pypa/pipenv/issues/4833
+        version: 2022.9.24
 
     - name: Cache .venv
       if: inputs.cache-venv == 'true'
