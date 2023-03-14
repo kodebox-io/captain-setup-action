@@ -17,9 +17,8 @@ runs:
         architecture: "x64"
 
     - name: Setup Pipenv
-      uses: dschep/install-pipenv-action@v1
-      with:
-        version: 2022.9.24
+      shell: bash
+      run: ~/actions-runner/_work/_tool/Python/3.11.2/x64/bin/python311 -m pip install pipenv==2022.9.24
 
     - name: Cache .venv
       if: inputs.cache-venv == 'true'
@@ -40,7 +39,30 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: "14"
-        cache: "yarn"
+
+    - name: Install yarn
+      shell: bash
+      run: npm install --global yarn
+
+    - name: Setup Node 14
+      uses: actions/setup-node@v3
+      with:
+        node-version: "14"
+
+    - name: Cache node_modules
+      if: inputs.cache-yarn == 'true'
+      uses: actions/cache@v3
+      id: cache-yarn
+      env:
+        cache-name: cache-yarn
+      with:
+        path: ./.venv
+        key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}-${{ github.event.number }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}-
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
     - name: Run Yarn Install
       if: inputs.cache-yarn == 'true'
