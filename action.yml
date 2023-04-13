@@ -36,6 +36,25 @@ runs:
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
+    - name: Check .venv
+      id: check-venv
+      shell: bash
+      run: |
+        if (pipenv run python3 -c "import django"); then
+          echo "result=true" >> $GITHUB_OUTPUT
+        else
+          echo "result=false" >> $GITHUB_OUTPUT
+          # 일주일이 지난 PR은 GitHub에 의해 .venv 캐시가 삭제되므로 재설치가 필요하다.
+          # https://docs.github.com/en/actions/advanced-guides/caching-dependencies-to-speed-up-workflows#usage-limits-and-eviction-policy
+          rm -rf .venv
+        fi
+
+    - name: zz deps_django
+      if: steps.cache-venv.outputs.cache-hit == 'false' || steps.check-venv.outputs.result == 'false'
+      shell: bash
+      run: |
+        ./zz deps_django
+
     - name: Setup Node 14
       uses: actions/setup-node@v3
       with:
