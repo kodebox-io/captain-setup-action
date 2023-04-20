@@ -50,7 +50,7 @@ runs:
         fi
 
     - name: zz deps_django
-      if: steps.cache-venv.outputs.cache-hit == 'false' || steps.check-venv.outputs.result == 'false'
+      if: inputs.cache-venv == 'true' && (steps.cache-venv.outputs.cache-hit != 'true' || steps.check-venv.outputs.result != 'true')
       shell: bash
       run: |
         ./zz deps_django
