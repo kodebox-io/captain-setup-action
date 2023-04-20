@@ -11,10 +11,12 @@ runs:
       uses: actions/checkout@v3
 
     - name: Setup Python 3.11
+      id: setup-python
       uses: actions/setup-python@v4
       with:
         python-version: "3.11"
         architecture: "x64"
+        cache: "pipenv"
 
     - name: Setup Pipenv
       shell: bash
@@ -22,36 +24,8 @@ runs:
         pip install pipenv
         python --version ; pip --version ; pipenv --version
 
-    - name: Cache .venv
-      if: inputs.cache-venv == 'true'
-      uses: actions/cache@v3
-      id: cache-venv
-      env:
-        cache-name: cache-venv
-      with:
-        path: ./.venv
-        key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Pipfile.lock') }}-${{ github.event.number }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Pipfile.lock') }}-
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-
-    - name: Check .venv
-      id: check-venv
-      shell: bash
-      run: |
-        if (pipenv run python3 -c "import django"); then
-          echo "result=true" >> $GITHUB_OUTPUT
-        else
-          echo "result=false" >> $GITHUB_OUTPUT
-          # 일주일이 지난 PR은 GitHub에 의해 .venv 캐시가 삭제되므로 재설치가 필요하다.
-          # https://docs.github.com/en/actions/advanced-guides/caching-dependencies-to-speed-up-workflows#usage-limits-and-eviction-policy
-          rm -rf .venv
-        fi
-
     - name: zz deps_django
-      if: inputs.cache-venv == 'true' && (steps.cache-venv.outputs.cache-hit != 'true' || steps.check-venv.outputs.result != 'true')
+      if: inputs.cache-venv == 'true' && steps.setup-python.outputs.cache-hit != 'true'
       shell: bash
       run: |
         ./zz deps_django
