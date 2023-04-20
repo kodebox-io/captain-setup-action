@@ -17,9 +17,10 @@ runs:
         architecture: "x64"
 
     - name: Setup Pipenv
-      uses: dschep/install-pipenv-action@v1
-      with:
-        version: 2022.9.24
+      shell: bash
+      run: |
+        pip install pipenv
+        python --version ; pip --version ; pipenv --version
 
     - name: Cache .venv
       if: inputs.cache-venv == 'true'
