@@ -4,6 +4,8 @@ inputs:
     default: false
   cache-yarn:
     default: false
+  cache-db:
+    default: false
 runs:
   using: "composite"
   steps:
@@ -30,9 +32,9 @@ runs:
         cache-name: cache-venv
       with:
         path: ./.venv
-        key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Pipfile.lock') }}-${{ github.event.number }}
+        key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('./Pipfile.lock') }}-${{ github.event.number }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Pipfile.lock') }}-
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./Pipfile.lock') }}-
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
@@ -73,3 +75,35 @@ runs:
       run: |
         yarn lerna bootstrap
         yarn lerna exec --parallel yarn link
+
+    - name: Cache DB migration datas 
+      if: inputs.cache-db == 'true'
+      uses: actions/cache@v3
+      id: cache-db
+      env:
+        cache-name: cache-db
+      with:
+        path: ./db-volume.tar
+        key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('zuzu/db/migrations/0*') }}
+
+    - name: Extract the compressed DB migration datas
+      if: inputs.cache-db == 'true' && steps.cache-db.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        sudo tar -xvf db-volume.tar
+
+    - name: Compress the DB migration datas
+      if: inputs.cache-db == 'true' && steps.cache-db.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        docker-compose -f ./docker/testing.yaml up -d db
+        yarn global add retry-cli
+        for _ in $(seq 3); do npx retry -t 1000 --max-timeout=60000 ./zz db_isready; sleep 1; done
+
+        ./zz migrate --no-input
+        ./zz backupdb postgres test_postgres
+
+        # actions/cache에서는 'docker' usergroup이 소유하고 있는 파일에 접근할 수 없어, 부득이하게 Docker volume의 압축파일을 생성하여 캐시한다.
+        # See https://github.com/actions/cache/issues/31
+        sudo tar -cvf db-volume.tar ./db-volume
+
