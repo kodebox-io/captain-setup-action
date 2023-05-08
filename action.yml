@@ -12,6 +12,12 @@ runs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: touch-gcloud-credential-file
+      if: inputs.cache-venv == 'true'
+      shell: bash
+      run: |
+        echo $GOOGLE_APPLICATION_CREDENTIALS_JSON > $GOOGLE_APPLICATION_CREDENTIALS
+
     - name: Setup Python 3.11
       uses: actions/setup-python@v4
       with:
