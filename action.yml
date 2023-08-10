@@ -14,6 +14,11 @@ runs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: "Authenticate to Google Cloud"
+      uses: "google-github-actions/auth@v1"
+      with:
+        credentials_json: ${{ env.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+
     - name: touch-gcloud-credential-file
       if: inputs.cache-venv == 'true'
       shell: bash
@@ -31,6 +36,17 @@ runs:
       run: |
         pip install pipenv
         python --version ; pip --version ; pipenv --version
+
+    - name: Cache the node_modules
+      if: inputs.cache-yarn == 'true'
+      id: cache-yarn
+      uses: mansagroup/gcs-cache-action@v1.0.3
+      with:
+        bucket: zuzu_ci_cache
+        path: ./node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          node-modules-${{ runner.os }}-
 
     - name: Cache .venv
       if: inputs.cache-venv == 'true'
@@ -70,12 +86,13 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: "14"
-        cache: "yarn"
 
     - name: Run Yarn Install
-      if: inputs.cache-yarn == 'true'
+      if: inputs.cache-yarn == 'true' && steps.cache-yarn.outputs.cache-hit != 'true'
       shell: bash
-      run: yarn install
+      run: |
+        ./zz deps_react
+        ./zz deps_react_init
 
     - name: Initialize Lerna
       if: steps.cache-yarn.outputs.cache-hit == 'true'
