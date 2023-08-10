@@ -97,15 +97,16 @@ runs:
         yarn lerna bootstrap
         yarn lerna exec --parallel yarn link
 
-    - name: Cache DB migration datas 
+    - name: Cache DB migration datas
       if: inputs.cache-db == 'true'
-      uses: actions/cache@v3
       id: cache-db
-      env:
-        cache-name: cache-db
+      uses: mansagroup/gcs-cache-action@v1.0.3
       with:
+        bucket: zuzu_ci_cache
         path: ./db-volume.tar
-        key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('zuzu/db/migrations/0*') }}
+        key: db-${{ runner.os }}-${{ hashFiles('zuzu/db/migrations/0*') }}
+        restore-keys: |
+          db-${{ runner.os }}-
 
     - name: Extract the compressed DB migration datas
       if: inputs.cache-db == 'true' && steps.cache-db.outputs.cache-hit == 'true'
@@ -127,4 +128,3 @@ runs:
         # actions/cache에서는 'docker' usergroup이 소유하고 있는 파일에 접근할 수 없어, 부득이하게 Docker volume의 압축파일을 생성하여 캐시한다.
         # See https://github.com/actions/cache/issues/31
         sudo tar -cvf db-volume.tar ./db-volume
-
