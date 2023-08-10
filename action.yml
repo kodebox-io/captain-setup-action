@@ -1,11 +1,13 @@
 name: "Setup"
+
 inputs:
   cache-venv:
-    default: false
+    default: "false"
   cache-yarn:
-    default: false
+    default: "false"
   cache-db:
-    default: false
+    default: "false"
+
 runs:
   using: "composite"
   steps:
