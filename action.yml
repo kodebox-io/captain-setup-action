@@ -50,18 +50,14 @@ runs:
 
     - name: Cache .venv
       if: inputs.cache-venv == 'true'
-      uses: actions/cache@v3
       id: cache-venv
-      env:
-        cache-name: cache-venv
+      uses: mansagroup/gcs-cache-action@v1.0.3
       with:
+        bucket: zuzu_ci_cache
         path: ./.venv
-        key: v1-${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('./Pipfile.lock') }}-${{ github.event.number }}
+        key: venv-${{ runner.os }}-${{ hashFiles('./Pipfile.lock') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./Pipfile.lock') }}-
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+          venv-${{ runner.os }}-
 
     - name: Check .venv
       id: check-venv
