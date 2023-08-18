@@ -78,10 +78,10 @@ runs:
       run: |
         ./zz deps_django
 
-    - name: Setup Node 14
+    - name: Setup Node 16
       uses: actions/setup-node@v3
       with:
-        node-version: "14"
+        node-version: "16"
 
     - name: Run Yarn Install
       if: inputs.cache-yarn == 'true' && steps.cache-yarn.outputs.cache-hit != 'true'
