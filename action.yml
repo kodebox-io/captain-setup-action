@@ -120,7 +120,7 @@ runs:
       run: |
         docker-compose -f ./docker/testing.yaml up -d db
         yarn global add retry-cli
-        for _ in $(seq 3); do npx retry -t 1000 --max-timeout=60000 ./zz db_isready; sleep 1; done
+        for _ in $(seq 3); do retry -t 1000 --max-timeout=60000 ./zz db_isready; sleep 1; done
 
         ./zz migrate --no-input
         ./zz backupdb postgres test_postgres
