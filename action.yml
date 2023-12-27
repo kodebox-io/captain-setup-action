@@ -42,7 +42,7 @@ runs:
       id: cache-yarn
       uses: mansagroup/gcs-cache-action@v1.0.3
       with:
-        bucket: zuzu_ci_cache
+        bucket: zuzu_ci_cache_us
         path: ./node_modules
         key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
@@ -53,7 +53,7 @@ runs:
       id: cache-venv
       uses: mansagroup/gcs-cache-action@v1.0.3
       with:
-        bucket: zuzu_ci_cache
+        bucket: zuzu_ci_cache_us
         path: ./.venv
         key: venv-${{ runner.os }}-${{ hashFiles('./Pipfile.lock') }}
         restore-keys: |
@@ -102,7 +102,7 @@ runs:
       id: cache-db
       uses: mansagroup/gcs-cache-action@v1.0.3
       with:
-        bucket: zuzu_ci_cache
+        bucket: zuzu_ci_cache_us
         path: ./db-volume.tar
         key: db-${{ runner.os }}-${{ hashFiles('zuzu/db/migrations/0*') }}
         restore-keys: |
