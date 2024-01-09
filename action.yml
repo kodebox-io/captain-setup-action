@@ -40,7 +40,7 @@ runs:
     - name: Cache the node_modules
       if: inputs.cache-yarn == 'true'
       id: cache-yarn
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ./node_modules
         key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -50,7 +50,7 @@ runs:
     - name: Cache .venv
       if: inputs.cache-venv == 'true'
       id: cache-venv
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ./.venv
         key: venv-${{ runner.os }}-${{ hashFiles('./Pipfile.lock') }}
@@ -98,7 +98,7 @@ runs:
     - name: Cache DB migration datas
       if: inputs.cache-db == 'true'
       id: cache-db
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ./db-volume.tar
         key: db-${{ runner.os }}-${{ hashFiles('zuzu/db/migrations/0*') }}
