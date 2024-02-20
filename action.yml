@@ -14,17 +14,6 @@ runs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: "Authenticate to Google Cloud"
-      uses: "google-github-actions/auth@v1"
-      with:
-        credentials_json: ${{ env.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
-
-    - name: touch-gcloud-credential-file
-      if: inputs.cache-venv == 'true'
-      shell: bash
-      run: |
-        echo $GOOGLE_APPLICATION_CREDENTIALS_JSON > $GOOGLE_APPLICATION_CREDENTIALS
-
     - name: Setup Python 3.11
       uses: actions/setup-python@v4
       with:
