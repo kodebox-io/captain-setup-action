@@ -75,14 +75,12 @@ runs:
       shell: bash
       run: |
         ./zz deps_react
-        ./zz deps_react_init
 
     - name: Initialize Lerna
       if: steps.cache-yarn.outputs.cache-hit == 'true'
       shell: bash
       run: |
-        yarn lerna bootstrap
-        yarn lerna exec --parallel yarn link
+        ./zz deps_react_init
 
     - name: Cache DB migration datas
       if: inputs.cache-db == 'true'
