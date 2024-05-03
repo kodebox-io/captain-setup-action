@@ -76,6 +76,13 @@ runs:
       run: |
         ./zz deps_react
 
+    - name: Setup retry command
+      if: inputs.cache-yarn != 'true' # yarn 전체 설치를 안 하는 경우 별도로 retry-cli만 설치한다.
+      shell: bash
+      run: |
+        yarn add --dev -W retry-cli@^0.7.0
+        yarn patch-package
+
     - name: Initialize Lerna
       if: steps.cache-yarn.outputs.cache-hit == 'true'
       shell: bash
@@ -103,7 +110,6 @@ runs:
       shell: bash
       run: |
         docker-compose -f ./docker/testing.yaml up -d db
-        yarn global add retry-cli
         for _ in $(seq 3); do retry -t 1000 --max-timeout=60000 ./zz db_isready; sleep 1; done
 
         ./zz migrate --no-input
