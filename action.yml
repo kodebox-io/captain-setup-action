@@ -12,10 +12,10 @@ runs:
   using: "composite"
   steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Python 3.11
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.11"
         architecture: "x64"
@@ -29,7 +29,7 @@ runs:
     - name: Cache the node_modules
       if: inputs.cache-yarn == 'true'
       id: cache-yarn
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ./node_modules
         key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -39,7 +39,7 @@ runs:
     - name: Cache .venv
       if: inputs.cache-venv == 'true'
       id: cache-venv
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ./.venv
         key: venv-${{ runner.os }}-${{ hashFiles('./Pipfile.lock') }}
@@ -66,7 +66,7 @@ runs:
         ./zz deps_django
 
     - name: Setup Node 20
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: "20"
 
@@ -92,7 +92,7 @@ runs:
     - name: Cache DB migration datas
       if: inputs.cache-db == 'true'
       id: cache-db
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ./db-volume.tar
         key: db-${{ runner.os }}-${{ hashFiles('zuzu/db/migrations/0*') }}
