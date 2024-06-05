@@ -12,10 +12,6 @@ inputs:
   db-snapshot-artifact-run-id:
     default: "9367473869"
 
-env:
-  PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-  DB_SNAPSHOT_ARTIFACT_RUN_ID:  ${{ secrets.DB_SNAPSHOT_ARTIFACT_RUN_ID }}
-
 runs:
   using: "composite"
   steps:
