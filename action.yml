@@ -7,6 +7,10 @@ inputs:
     default: "false"
   cache-db:
     default: "false"
+  github-token:
+    default: ""
+  db-snapshot-artifact-run-id:
+    default: "9367473869"
 
 env:
   PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -105,9 +109,9 @@ runs:
       if: inputs.cache-db == 'true'
       uses: actions/download-artifact@v4
       with:
-        github-token: ${{ env.PAT_TOKEN }}
+        github-token: ${{ inputs.github-token }}
         repository: kodebox-io/captain
-        run-id: ${{ env.DB_SNAPSHOT_ARTIFACT_RUN_ID }}
+        run-id: ${{ inputs.db-snapshot-artifact-run-id }}
 
     - name: Restore DB from the snapshot
       if: inputs.cache-db == 'true'
