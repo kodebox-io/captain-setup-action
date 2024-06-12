@@ -23,6 +23,4 @@ runs:
         for _ in $(seq 3); do yarn retry -t 1000 --max-timeout=60000 ./zz db_isready; sleep 1; done
 
         docker cp db-snapshot/dump.gz captain_db:dump.gz
-        docker exec captain_db /bin/bash -c "createdb -U postgres --template=template0 test_postgres"
-        docker exec captain_db /bin/bash -c "pg_restore -U postgres -d test_postgres dump.gz"
         docker exec captain_db /bin/bash -c "pg_restore -U postgres -d postgres dump.gz"
