@@ -26,22 +26,8 @@ runs:
       with:
         install-zuzu-dependencies: ${{ inputs.cache-venv }}
 
-    - name: Download DB snapshot artifact
+    - uses: kodebox-io/captain-setup-action/setup-db-with-artifact@master
       if: inputs.cache-db == 'true'
-      uses: actions/download-artifact@v4
       with:
         github-token: ${{ inputs.github-token }}
-        repository: kodebox-io/captain
-        run-id: ${{ inputs.db-snapshot-artifact-run-id }}
-
-    - name: Restore DB from the snapshot
-      if: inputs.cache-db == 'true'
-      shell: bash
-      run: |
-        docker-compose -f ./docker/testing.yaml up -d db
-        for _ in $(seq 3); do yarn retry -t 1000 --max-timeout=60000 ./zz db_isready; sleep 1; done
-
-        docker cp db-snapshot/dump.gz captain_db:dump.gz
-        docker exec captain_db /bin/bash -c "createdb -U postgres --template=template0 test_postgres"
-        docker exec captain_db /bin/bash -c "pg_restore -U postgres -d test_postgres dump.gz"
-        docker exec captain_db /bin/bash -c "pg_restore -U postgres -d postgres dump.gz"
+        db-snapshot-artifact-run-id: ${{ inputs.db-snapshot-artifact-run-id }}
