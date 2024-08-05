@@ -19,7 +19,7 @@ runs:
     - name: Restore DB from the snapshot
       shell: bash
       run: |
-        docker-compose -f ./docker/testing.yaml up -d db
+        docker compose -f ./docker/testing.yaml up -d db
         for _ in $(seq 3); do yarn retry -t 1000 --max-timeout=60000 ./zz db_isready; sleep 1; done
 
         docker cp db-snapshot/dump.gz captain_db:dump.gz
