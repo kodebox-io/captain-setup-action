@@ -13,11 +13,11 @@ runs:
         python-version: "3.11"
         architecture: "x64"
 
-    - name: Setup Pipenv
+    - name: Setup uv
       shell: bash
       run: |
-        pip install pipenv
-        python --version ; pip --version ; pipenv --version
+        pip install uv
+        python --version ; uv --version
 
     - name: Cache .venv
       if: inputs.install-zuzu-dependencies == 'true'
@@ -25,7 +25,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ./.venv
-        key: venv-${{ runner.os }}-${{ hashFiles('./Pipfile.lock') }}
+        key: venv-${{ runner.os }}-${{ hashFiles('./uv.lock') }}
         restore-keys: |
           venv-${{ runner.os }}-
 
@@ -33,7 +33,7 @@ runs:
       id: check-venv
       shell: bash
       run: |
-        if (pipenv run python3 -c "import django"); then
+        if (uv run python3 -c "import django"); then
           echo "result=true" >> $GITHUB_OUTPUT
         else
           echo "result=false" >> $GITHUB_OUTPUT
