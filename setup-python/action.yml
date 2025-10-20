@@ -19,29 +19,6 @@ runs:
         pip install uv
         python --version ; uv --version
 
-    - name: Cache .venv
-      if: inputs.install-zuzu-dependencies == 'true'
-      id: cache-venv
-      uses: actions/cache@v4
-      with:
-        path: ./.venv
-        key: venv-${{ runner.os }}-${{ hashFiles('./uv.lock') }}
-        restore-keys: |
-          venv-${{ runner.os }}-
-
-    - name: Check .venv
-      id: check-venv
-      shell: bash
-      run: |
-        if (uv run python3 -c "import django"); then
-          echo "result=true" >> $GITHUB_OUTPUT
-        else
-          echo "result=false" >> $GITHUB_OUTPUT
-          # 일주일이 지난 PR은 GitHub에 의해 .venv 캐시가 삭제되므로 재설치가 필요하다.
-          # https://docs.github.com/en/actions/advanced-guides/caching-dependencies-to-speed-up-workflows#usage-limits-and-eviction-policy
-          rm -rf .venv
-        fi
-
     - name: zz deps_django
       if: inputs.install-zuzu-dependencies == 'true'
       shell: bash
