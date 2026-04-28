@@ -14,9 +14,9 @@ runs:
       uses: actions/cache@v4
       with:
         path: ./db-volume.tar
-        key: db-${{ runner.os }}-${{ hashFiles('zuzu/db/migrations/0*') }}
+        key: db-${{ runner.os }}-${{ inputs.db-snapshot-artifact-run-id }}-${{ hashFiles('zuzu/**/migrations/*.py') }}
         restore-keys: |
-          db-${{ runner.os }}-
+          db-${{ runner.os }}-${{ inputs.db-snapshot-artifact-run-id }}-
 
     - name: Extract the compressed DB migration datas
       if: steps.cache-db.outputs.cache-hit == 'true'
