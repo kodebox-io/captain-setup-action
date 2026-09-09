@@ -17,14 +17,6 @@ runs:
         restore-keys: |
           node-modules-${{ runner.os }}-
 
-    - name: Cache `retry-cli` node_modules
-      if: inputs.install-zuzu-dependencies != 'true'
-      id: cache-yarn-retry-cli
-      uses: actions/cache@v4
-      with:
-        path: ./node_modules
-        key: node-modules-retry-cli
-
     - name: Setup Node 20
       uses: actions/setup-node@v4
       with:
@@ -36,15 +28,8 @@ runs:
       run: |
         ./zz deps_react
 
-    - name: Install retry-cli
-      if: inputs.install-zuzu-dependencies != 'true' && steps.cache-yarn-retry-cli.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        yarn add --dev -W retry-cli@^0.7.0
-        yarn patch-package
-
     - name: Initialize Lerna
-      if: steps.cache-yarn.outputs.cache-hit == 'true' || steps.cache-yarn-retry-cli.outputs.cache-hit == 'true'
+      if: steps.cache-yarn.outputs.cache-hit == 'true'
       shell: bash
       run: |
         ./zz deps_react_init
