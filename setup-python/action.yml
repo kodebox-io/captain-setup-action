@@ -29,7 +29,9 @@ runs:
         restore-keys: |
           venv-${{ runner.os }}-
 
+    # .venv 없이 `uv run` 하면 uv 가 venv 를 만들고 프로젝트 전체를 설치하므로, venv 를 쓰는 잡에서만 확인한다.
     - name: Check .venv
+      if: inputs.install-zuzu-dependencies == 'true'
       id: check-venv
       shell: bash
       run: |
