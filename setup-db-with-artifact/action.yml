@@ -20,7 +20,14 @@ runs:
       shell: bash
       run: |
         docker compose -f ./docker/testing.yaml up -d db
-        timeout 90 bash -c 'until ./zz db_isready; do sleep 1; done'
+        # compose 는 detached 로 띄우므로 db 가 못 뜨면 잡 로그에 postgres 쪽 단서가 전혀 남지
+        # 않는다. 대기가 실패하면 컨테이너 로그를 남겨 원인을 로그만으로 좁힐 수 있게 한다.
+        timeout 90 bash -c 'until ./zz db_isready 2>/dev/null; do sleep 1; done' || {
+          echo "::error::db 가 90초 안에 준비되지 않았습니다."
+          docker ps -a --filter name=captain_db --format 'captain_db 상태: {{.Status}}'
+          docker logs captain_db
+          exit 1
+        }
 
         docker cp db-snapshot/dump.gz captain_db:dump.gz
         docker exec captain_db /bin/bash -c "pg_restore -U postgres -d postgres dump.gz"
