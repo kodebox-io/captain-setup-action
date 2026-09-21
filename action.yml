@@ -11,12 +11,20 @@ inputs:
     default: ""
   db-snapshot-artifact-run-id:
     default: ""
+  # 체크아웃할 ref. 비우면 actions/checkout 기본값(워크플로를 트리거한 커밋). schedule 처럼
+  # 기본 브랜치에서만 도는 워크플로가 다른 브랜치 코드로 작업해야 할 때 쓴다
+  # (예: 테스트 DB 스냅샷을 production 코드로 굽기). 여기서 정해야 뒤따르는 캐시 키
+  # (uv.lock·migrations 해시)도 같은 코드 기준으로 잡힌다.
+  ref:
+    default: ""
 
 runs:
   using: "composite"
   steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.ref }}
 
     # Node 는 클라이언트 의존성이 필요한 잡에서만 세운다. 서버 잡은 Node 를 쓰지 않는다.
     - uses: kodebox-io/captain-setup-action/setup-node@master
