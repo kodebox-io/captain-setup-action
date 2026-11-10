@@ -17,10 +17,13 @@ runs:
         restore-keys: |
           node-modules-${{ runner.os }}-
 
-    - name: Setup Node 20
+    # 버전은 체크아웃한 저장소의 .nvmrc 를 따른다(배포 빌드와 같은 Node 로 검사한다).
+    # 러너 이미지에 없는 버전을 고르면 잡마다 내려받아 툴캐시에 복사하느라 12~15초가 더 든다.
+    # ubuntu-24.04 이미지에서 Node 20 이 빠진 뒤 "20" 고정이 그랬다.
+    - name: Setup Node
       uses: actions/setup-node@v4
       with:
-        node-version: "20"
+        node-version-file: .nvmrc
 
     - name: Install ZUZU dependencies
       if: inputs.install-zuzu-dependencies == 'true' && steps.cache-yarn.outputs.cache-hit != 'true'
